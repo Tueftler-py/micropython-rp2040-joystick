@@ -31,7 +31,10 @@ async def main():
 
 asyncio.run(main())
 
-also works without asyncio:
+
+
+# Also works without asyncio:
+
 from joystick import Joystick
 import time
 
