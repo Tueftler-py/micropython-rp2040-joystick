@@ -17,11 +17,13 @@ Simply copy `joystick.py` into your project folder or `lib` directory on your Mi
 
 ## Usage
 
+Please run this file the first time directly to calibrate the joystick (calibrations is saved in the same file).
+
 ```python
 from joystick import Joystick
 import asyncio
 
-# Initialize joystick with ADC IDS and button pin
+# Initialize joystick with ADC IDs and button pin
 joystick = Joystick(a1=0, a2=1, button_pin=22)  # Adjust pins accordingly
 
 async def main():
@@ -38,7 +40,7 @@ asyncio.run(main())
 from joystick import Joystick
 import time
 
-# Initialize joystick with ADC IDS and button pin
+# Initialize joystick with ADC IDs and button pin
 joystick = Joystick(a1=0, a2=1, button_pin=22)  # Adjust pins accordingly
 
 while True:
