@@ -1,24 +1,25 @@
-# Calibration
+# Calibration (will be automatically written)
 []
 # Created by Tueftler.py
 
 import machine, os, asyncio
 
 @micropython.native
-def find_file(path="", first_line="# Calibration"):
+def find_file(path="", first_line="# Calibration", file_type=".py"):
     """
     Recursively search for the first Python file that starts with a specific line.
 
     Args:
         path (str): Directory to start searching from.
         first_line (str): Line that must match the first line of the file.
+        file_type (str): File ending of searched file, if you don't want this then only use a period for all files to be searched.'
 
     Returns:
         str: Path to the matching file, or None if not found.
     """
     for entry in os.listdir(path):
         newpath = path + "/" + entry
-        if entry.endswith(".py"):
+        if entry.endswith(file_type):
             with open(newpath, "r") as file:
                 if file.readline().strip() == first_line:
                     return newpath
@@ -32,18 +33,24 @@ class Joystick:
     Class to handle analog joystick input with calibration and direction detection.
     """
 
-    def __init__(self, a1, a2, button_pin):
+    def __init__(self, a1, a2, button_pin, samples=3, deadzone=10, async_timeout=10):
         """
         Initialize the Joystick with ADC pins and button pin.
 
         Args:
-            a1 (int): ADC pin for X axis.
-            a2 (int): ADC pin for Y axis.
+            a1 (int): ADC ID for X axis.
+            a2 (int): ADC ID for Y axis.
             button_pin (int): GPIO pin number for the button.
+            samples (int): how much values for each measurement.
+            deadzone (int): A zone around the center where nothing will not be recognized, useful for stickdrift problems. The value is in percent.
+            async_timeout (int): time in ms for polling in async functions.
         """
         self.a1 = machine.ADC(a1)
         self.a2 = machine.ADC(a2)
         self.btn = machine.Pin(button_pin, machine.Pin.IN, machine.Pin.PULL_UP)
+        self.samples = samples
+        self.deadzone = deadzone
+        self.at = async_timeout
         self.file = find_file()
         if not self.file:
             raise OSError("This file couldn't be found in the filesystem")
@@ -66,15 +73,13 @@ class Joystick:
         return self.btn.value() == 0
 
     @micropython.native
-    async def button_waiter(self, timeout=10):
+    async def button_waiter(self):
         """
         Wait asynchronously until the joystick button is released.
 
-        Args:
-            timeout (int): Time in milliseconds between checks.
         """
         while self.button():
-            await asyncio.sleep_ms(timeout)
+            await asyncio.sleep_ms(self.at)
 
     def calibrate(self):
         """
@@ -116,13 +121,17 @@ class Joystick:
         Load calibration data and compute mid ranges and axis values.
 
         Args:
-            data (list): Calibration data from file.
+            data (list): Calibration data from second line of this file.
         """
+
+        p_over = round((100 + self.deadzone) / 100,2)
+        p_under = round((100 - self.deadzone) / 100,2)
+
         self.middle1 = data[0][2]
-        self.middle1_range = [round(self.middle1 * 0.9), self.middle1, round(self.middle1 * 1.1)]
+        self.middle1_range = [round(self.middle1 * p_under), self.middle1, round(self.middle1 * p_over)]
 
         self.middle2 = data[0][4]
-        self.middle2_range = [round(self.middle2 * 0.9), self.middle2, round(self.middle2 * 1.1)]
+        self.middle2_range = [round(self.middle2 * p_under), self.middle2, round(self.middle2 * p_over)]
 
         self.middle = [self.middle1_range, self.middle2_range]
 
@@ -139,19 +148,18 @@ class Joystick:
         self.downaxis = data[4][1]
 
     @micropython.native
-    def axis_reader(self, axis, samples=3):
+    def axis_reader(self, axis):
         """
         Read analog values from a specified axis and return average.
 
         Args:
             axis (int): 1 for X-axis, 2 for Y-axis.
-            samples (int): Number of samples to average.
 
         Returns:
             int: Averaged ADC value.
         """
         adc = self.a1 if axis == 1 else self.a2
-        return round(sum(adc.read_u16() for _ in range(samples)) / samples)
+        return round(sum(adc.read_u16() for _ in range(self.samples)) / samples)
 
     @micropython.native
     def converter(self, axis, maxval):
@@ -255,13 +263,12 @@ class Joystick:
             return self.max_direction(as_bool)
 
     @micropython.native
-    async def get_waiter(self, as_bool=True, timeout=10):
+    async def get_waiter(self, as_bool=True):
         """
         Wait asynchronously until joystick input is detected.
 
         Args:
             as_bool (bool): Whether to return bool or percent.
-            timeout (int): Delay in ms between polls.
 
         Returns:
             str or list: Detected direction or "button".
@@ -272,7 +279,7 @@ class Joystick:
                 val = "button"
             else:
                 val = self.max_direction(as_bool)
-            await asyncio.sleep_ms(timeout)
+            await asyncio.sleep_ms(self.at)
         return val
 
 if __name__ == "__main__":
