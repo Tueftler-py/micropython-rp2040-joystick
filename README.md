@@ -1,10 +1,11 @@
 # Micropython RP2040 Joystick Library
 
 This is a lightweight and efficient joystick library for Micropython on RP2040-based boards. It supports analog joystick input with calibration, button reading, and asynchronous input detection.
+This library was developed for the RP2040 but may work on other Micropython boards if you adapt the pin assignments.
 
 ## Features
 
-- Automatic joystick calibration with easy interactive setup
+- Automatic joystick calibration with easy interactive setup (just calibrate in the position your joystick is mounted, even if it's rotated. The library will handle it.)
 - Analog input reading with smoothing (averaging samples)
 - Direction detection with percentage-based sensitivity
 - Button press detection
@@ -13,7 +14,7 @@ This is a lightweight and efficient joystick library for Micropython on RP2040-b
 
 ## Installation
 
-Simply copy `joystick.py` into your project folder or `lib` directory on your Micropython device.
+Simply copy `joystick.py` into your project folder or `lib` directory on your RP2040 Micropython device.
 
 ## Usage
 
