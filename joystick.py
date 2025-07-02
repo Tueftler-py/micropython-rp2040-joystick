@@ -159,7 +159,7 @@ class Joystick:
             int: Averaged ADC value.
         """
         adc = self.a1 if axis == 1 else self.a2
-        return round(sum(adc.read_u16() for _ in range(self.samples)) / samples)
+        return round(sum(adc.read_u16() for _ in range(self.samples)) / self.samples)
 
     @micropython.native
     def converter(self, axis, maxval):
