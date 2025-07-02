@@ -17,7 +17,7 @@ Simply copy `joystick.py` into your project folder or `lib` directory on your Mi
 
 ## Usage
 
-Please run this file the first time directly to calibrate the joystick (calibrations is saved in the same file).
+Please run this file the first time directly to calibrate the joystick (calibrations will be saved into the same file).
 
 ```python
 from joystick import Joystick
@@ -32,7 +32,6 @@ async def main():
         print("Joystick event:", input_event)
 
 asyncio.run(main())
-
 
 
 # Also works without asyncio:
