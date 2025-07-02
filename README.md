@@ -1,6 +1,7 @@
 # Micropython RP2040 Joystick Library
 
-This is a lightweight and efficient joystick library for Micropython on RP2040-based boards. It supports analog joystick input with calibration, button reading, and asynchronous input detection.
+This is a lightweight and efficient joystick library for Micropython on RP2040-based boards.
+It supports analog joystick input with calibration, button reading, and asynchronous input detection.
 This library was developed for the RP2040 but may work on other Micropython boards if you adapt the pin assignments.
 
 ## Features
@@ -19,6 +20,25 @@ Simply copy `joystick.py` into your project folder or `lib` directory on your RP
 ## Usage
 
 Please run this file the first time directly to calibrate the joystick (calibrations will be saved into the same file).
+
+### 🔧 Constructor Parameters
+
+You can adjust the behavior of the joystick by passing optional parameters when creating the object:
+
+```python
+Joystick(a1, a2, button_pin, samples=3, deadzone=10, async_timeout=10)
+```
+
+| Parameter       | Type   | Default | Description                                                                 |
+|----------------|--------|---------|-----------------------------------------------------------------------------|
+| `a1`, `a2`      | `int`  | —       | ADC pin numbers for the X and Y axis.                                      |
+| `button_pin`    | `int`  | —       | GPIO pin number for the joystick button.                                   |
+| `samples`       | `int`  | `3`     | Number of ADC samples to average per axis read. Higher = smoother but slower. |
+| `deadzone`      | `int`  | `10`    | Percentage range around the center that counts as "neutral" (prevents small input noise). |
+| `async_timeout` | `int`  | `10`    | Delay in milliseconds between checks in `get_waiter()` or `button_waiter()` (used with asyncio). |
+
+
+Examples:
 
 ```python
 from joystick import Joystick
