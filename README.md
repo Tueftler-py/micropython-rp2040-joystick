@@ -31,7 +31,7 @@ Joystick(a1, a2, button_pin, samples=3, deadzone=10, async_timeout=10)
 
 | Parameter       | Type   | Default | Description                                                                 |
 |----------------|--------|---------|-----------------------------------------------------------------------------|
-| `a1`, `a2`      | `int`  | —       | ADC pin numbers for the X and Y axis.                                      |
+| `a1`, `a2`      | `int`  | —       | ADC IDs for the two axis.                                        |
 | `button_pin`    | `int`  | —       | GPIO pin number for the joystick button.                                   |
 | `samples`       | `int`  | `3`     | Number of ADC samples to average per axis read. Higher = smoother but slower. |
 | `deadzone`      | `int`  | `10`    | Percentage range around the center that counts as "neutral" (prevents small input noise). |
