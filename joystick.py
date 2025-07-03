@@ -5,7 +5,7 @@
 import machine, os, asyncio
 
 @micropython.native
-def find_file(path="", first_line="# Calibration", file_type=".py"):
+def find_file(path="", first_line="# Calibration (will be automatically written)", file_type=".py"):
     """
     Recursively search for the first Python file that starts with a specific line.
 
