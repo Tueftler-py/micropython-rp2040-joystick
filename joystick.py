@@ -134,8 +134,7 @@ class Joystick:
         self.middle2_range = [round(self.middle2 * p_under), self.middle2, round(self.middle2 * p_over)]
 
         self.middle = [self.middle1_range, self.middle2_range]
-        print(self.middle)
-
+        
         self.leftval = data[1][2]
         self.leftaxis = data[1][1]
 
