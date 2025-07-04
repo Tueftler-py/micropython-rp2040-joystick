@@ -33,7 +33,7 @@ class Joystick:
     Class to handle analog joystick input with calibration and direction detection.
     """
 
-    def __init__(self, a1, a2, button_pin, samples=3, deadzone=10, async_timeout=10):
+    def __init__(self, a1, a2, button_pin, samples=3, deadzone=3, async_timeout=10):
         """
         Initialize the Joystick with ADC pins and button pin.
 
@@ -134,6 +134,7 @@ class Joystick:
         self.middle2_range = [round(self.middle2 * p_under), self.middle2, round(self.middle2 * p_over)]
 
         self.middle = [self.middle1_range, self.middle2_range]
+        print(self.middle)
 
         self.leftval = data[1][2]
         self.leftaxis = data[1][1]
@@ -174,14 +175,15 @@ class Joystick:
             int: Percentage from center (0–100).
         """
         val = self.axis_reader(axis)
-        mid = self.middle[axis - 1][1]
+        mid1 = self.middle[axis - 1][0]
+        mid2 = self.middle[axis - 1][2]
 
-        if val > mid:
-            range_max = maxval
-            percent = (val - mid) / (range_max - mid) * 100
+        if val > mid2:
+            percent = (val - mid2) / (maxval - mid2) * 100
+        elif val < mid1:
+            percent = (mid1 - val) / (mid1 - maxval) * 100
         else:
-            range_min = maxval
-            percent = (mid - val) / (mid - range_min) * 100
+            return 0
 
         return round(min(100, max(0, percent)))
 
